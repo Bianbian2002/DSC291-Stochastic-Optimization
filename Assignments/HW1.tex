@@ -1,0 +1,602 @@
+\documentclass[en,hazy,blue,12pt,normal]{elegantnote}
+
+\input{preface}
+
+\title{DSC291 Stochastic Optimization}
+\author{Input Your Name Here}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Theory}
+
+\begin{homework}
+    Given a positive definite matrix $A \in \mathbf{R}^{d \times d}$, show that the assignment $\langle v, w\rangle_A:=\langle A v, w\rangle$ is an inner product on $\mathbf{E}$, with the induced norm $\|v\|_{\mathcal{A}}=\sqrt{\langle A v, v\rangle}$.
+\end{homework}
+
+\begin{proof}
+    We verify the definition of inner product on $\mathbf{E}$:
+
+\textbf{1) Bilinearity}
+
+Because the map $v \mapsto A v$ is linear and the Euclidean inner product is bilinear:
+
+\begin{itemize}
+    \item  Linearity in the first argument: for $\alpha, \beta \in \mathbb{R}$ and $v_1, v_2, w \in \mathbf{E}$,
+        \begin{align}
+            \left\langle\alpha v_1+\beta v_2, w\right\rangle_A&=\left\langle A\left(\alpha v_1+\beta v_2\right), w\right\rangle=\left\langle\alpha A v_1+\beta A v_2, w\right\rangle \\
+            &=\alpha\left\langle A v_1, w\right\rangle+\beta\left\langle A v_2, w\right\rangle=\alpha\left\langle v_1, w\right\rangle_A+\beta\left\langle v_2, w\right\rangle_A .
+        \end{align}
+    \item Linearity in the second argument: for $\alpha, \beta \in \mathbb{R}$ and $v, w_1, w_2 \in \mathbf{E}$,
+        \begin{align}
+            \left\langle v, \alpha w_1+\beta w_2\right\rangle_A=\left\langle A v, \alpha w_1+\beta w_2\right\rangle=\alpha\left\langle A v, w_1\right\rangle+\beta\left\langle A v, w_2\right\rangle=\alpha\left\langle v, w_1\right\rangle_A+\beta\left\langle v, w_2\right\rangle_A .
+        \end{align}
+\end{itemize}
+
+So $\langle\cdot, \cdot\rangle_A$ is bilinear.
+
+\textbf{2) Symmetry}
+
+$$
+\langle v, w\rangle_A=(A v)^{\top} w=v^{\top} A^{\top} w=v^{\top} A w .
+$$
+
+
+Similarly,
+
+$$
+\langle w, v\rangle_A=w^{\top} A v
+$$
+
+
+But since $A$ is symmetric, $v^{\top} A w=w^{\top} A v$, hence
+
+$$
+\langle v, w\rangle_A=\langle w, v\rangle_A
+$$
+
+\textbf{3) Positive definiteness}
+
+For any $v \in \mathbf{E}$,
+
+$$
+\langle v, v\rangle_A=\langle A v, v\rangle=v^{\top} A v .
+$$
+
+
+Because $A$ is positive definite, $v^{\top} A v>0$ for all $v \neq 0$, and clearly $0^{\top} A 0=0$. Therefore,
+
+$$
+\langle v, v\rangle_A \geq 0, \quad \text { and } \quad\langle v, v\rangle_A=0 \Longleftrightarrow v=0 .
+$$
+
+
+All axioms hold, so $\langle\cdot, \cdot\rangle_A$ is an inner product on $\mathbf{E}$.
+
+\textbf{Induced norm}
+
+The norm induced by an inner product is
+
+$$
+\|v\|_A:=\sqrt{\langle v, v\rangle_A} .
+$$
+
+
+Here,
+
+$$
+\|v\|_A=\sqrt{\langle v, v\rangle_A}=\sqrt{\langle A v, v\rangle}=\sqrt{v^{\top} A v},
+$$
+\end{proof}
+
+\begin{homework}
+    Define the function
+
+$$
+f(x)=\frac{1}{2}\langle\mathcal{A} x, x\rangle+\langle v, x\rangle+c
+$$
+
+where $\mathcal{A}: \mathbf{E} \rightarrow \mathbf{E}$ is a linear operator, $v$ lies in $\mathbf{E}$, and $c$ is a real number. Suppose that $\mathcal{A}$ is self-adjoint in the sense that it satisfies $\langle\mathcal{A} x, y\rangle=\langle x, \mathcal{A} y\rangle$ for all $x, y \in \mathbf{E}$. Derive the equation:
+
+$$
+\nabla f(x)=\mathcal{A} x+v \quad \text { and } \quad \nabla^2 f(x)=\mathcal{A} .
+$$
+\end{homework}
+
+\begin{proof}
+    We compute 
+    \[
+\begin{aligned}
+f(x+h) & =\frac{1}{2}\langle\mathcal{A}(x+h), x+h\rangle+\langle v, x+h\rangle+c \\
+& =\frac{1}{2}\langle\mathcal{A} x+\mathcal{A} h, x+h\rangle+\langle v, x\rangle+\langle v, h\rangle+c \\
+& =\frac{1}{2}(\langle\mathcal{A} x, x\rangle+\langle\mathcal{A} x, h\rangle+\langle\mathcal{A} h, x\rangle+\langle\mathcal{A} h, h\rangle)+\langle v, x\rangle+\langle v, h\rangle+c .
+\end{aligned}
+\]
+
+Then
+\[f(x+h)-f(x)=\frac{1}{2}(\langle\mathcal{A} x, h\rangle+\langle\mathcal{A} h, x\rangle+\langle\mathcal{A} h, h\rangle)+\langle v, h\rangle =\langle\mathcal{A} x, h\rangle+\langle v, h\rangle+\frac{1}{2}\langle\mathcal{A} h, h\rangle .\]
+
+By definition, the gradient is the unique vector such that
+\[D f(x)[h]=\langle\nabla f(x), h\rangle \quad \text { for all } h \in \mathbf{E} .\]
+
+Therefore from the expansion we have
+\[\nabla f(x)=\mathcal{A} x+v .\]
+
+\textbf{Hessian Computation:}
+
+Since $\mathcal{A}$ is linear and $v$ is constant,
+
+$$
+D(\nabla f)(x)[h]=\mathcal{A} h .
+$$
+
+Therefore
+\[\nabla^2 f(x)=\mathcal{A}.\]
+\end{proof}
+
+\begin{homework}
+    Consider a function $f: U \rightarrow \mathbf{R}$ and a linear mapping $\mathcal{A}: \mathbf{Y} \rightarrow \mathbf{E}$ and define the composition $h(x)=f(\mathcal{A} x)$.
+    
+1. Show that if $f$ is differentiable at $\mathcal{A} x$, then
+
+$$
+\nabla h(x)=\mathcal{A}^* \nabla f(\mathcal{A} x)
+$$
+
+2. Show that if $f$ is twice differentiable at $\mathcal{A} x$, then
+
+$$
+\nabla^2 h(x)=\mathcal{A}^* \nabla^2 f(\mathcal{A} x) \mathcal{A}
+$$
+\end{homework}
+
+\begin{proof}
+    1. By the chain rule
+    \[D h(x)=D f(\mathcal{A} x) \circ \mathcal{A},\]
+
+    By definition of gradient (Riesz representation),
+
+$$
+D f(z)[w]=\langle\nabla f(z), w\rangle_{\mathbf{E}} \quad \text { for all } w \in \mathbf{E} .
+$$
+
+
+So with $w=\mathcal{A v}$,
+
+$$
+D h(x)[v]=\langle\nabla f(\mathcal{A} x), \mathcal{A} v\rangle_{\mathbf{E}} .
+$$
+
+Now we use the adjoint property to move $\mathcal{A}$ to the other side:
+
+$$
+\langle\nabla f(\mathcal{A} x), \mathcal{A} v\rangle_{\mathbf{E}}=\left\langle\mathcal{A}^* \nabla f(\mathcal{A} x), v\right\rangle_{\mathbf{Y}} .
+$$
+
+
+But also, by definition of $\nabla h(x)$,
+
+$$
+D h(x)[v]=\langle\nabla h(x), v\rangle_{\mathbf{Y}} \quad \text { for all } v \in \mathbf{Y} .
+$$
+
+
+Therefore, for all $v$,
+
+$$
+\langle\nabla h(x), v\rangle_{\mathbf{Y}}=\left\langle\mathcal{A}^* \nabla f(\mathcal{A} x), v\right\rangle_{\mathbf{Y}} .
+$$
+
+
+By uniqueness of the Riesz representative, we conclude
+
+$$
+\nabla h(x)=\mathcal{A}^* \nabla f(\mathcal{A} x) .
+$$
+
+2. By the chain rule we have
+
+\[D^2 h(x)[u, v]=D^2 f(\mathcal{A} x)[\mathcal{A} u, \mathcal{A} v] .\]
+
+$$
+D^2 f(z)[p, q]=\left\langle\nabla^2 f(z) p, q\right\rangle_{\mathbf{E}} \quad \text { for all } p, q \in \mathbf{E},
+$$
+
+and similarly for $h$ :
+
+$$
+D^2 h(x)[u, v]=\left\langle\nabla^2 h(x) u, v\right\rangle_{\mathbf{Y}} \quad \text { for all } u, v \in \mathbf{Y} .
+$$
+
+Now we compute:
+
+$$
+\begin{aligned}
+D^2 h(x)[u, v] & =D^2 f(\mathcal{A} x)[\mathcal{A} u, \mathcal{A} v] \\
+& =\left\langle\nabla^2 f(\mathcal{A} x)(\mathcal{A} u), \mathcal{A} v\right\rangle_{\mathbf{E}} \\
+& =\left\langle\mathcal{A}^*\left(\nabla^2 f(\mathcal{A} x) \mathcal{A} u\right), v\right\rangle_{\mathbf{Y}}.
+\end{aligned}
+$$
+
+
+Thus, for all $u, v$,
+
+$$
+\left\langle\nabla^2 h(x) u, v\right\rangle_{\mathbf{Y}}=\left\langle\mathcal{A}^* \nabla^2 f(\mathcal{A} x) \mathcal{A} u, v\right\rangle_{\mathbf{Y}}
+$$
+
+
+By uniqueness again, the operators must match:
+
+$$
+\nabla^2 h(x)=\mathcal{A}^* \nabla^2 f(\mathcal{A} x) \mathcal{A} .
+$$
+\end{proof}
+
+\begin{homework}
+    Define the two sets
+
+$$
+\begin{aligned}
+\mathbf{R}_{++}^n & :=\left\{x \in \mathbf{R}^n: x_i>0 \text { for all } i=1, \ldots, n\right\}, \\
+\mathbf{S}_{++}^n & :=\left\{X \in \mathbf{S}^n: X \succ 0\right\} .
+\end{aligned}
+$$
+
+
+Consider the two functions $f: \mathbf{R}_{++}^n \rightarrow \mathbf{R}$ and $F: \mathbf{S}_{++}^n \rightarrow \mathbf{R}$ given by
+
+$$
+f(x)=-\sum_{i=1}^n \log x_i \quad \text { and } \quad F(X)=-\ln \operatorname{det}(X),
+$$
+
+respectively. Note, from basic properties of the determinant, the equality $F(X)=f(\lambda(X))$, where we set $\lambda(X):=\left(\lambda_1(X), \ldots, \lambda_n(X)\right)$.
+
+1. Find the derivatives $\nabla f(x)$ and $\nabla^2 f(x)$ for $x \in \mathbf{R}_{++}^n$.
+
+2. Using the property $\operatorname{tr}(A B)=\operatorname{tr}(B A)$, prove $\nabla F(X)=-X^{-1}$ and $\nabla^2 F(X)[V]=X^{-1} V X^{-1}$ for any $X \succ 0$.
+
+3. Show
+
+$$
+\left\langle\nabla^2 F(X)[V], V\right\rangle=\left\|X^{-\frac{1}{2}} V X^{-\frac{1}{2}}\right\|_F^2
+$$
+
+for any $X \succ 0$ and $V \in \mathcal{S}^n$. Deduce that the operator $\nabla^2 F(X): \mathbf{S}^n \rightarrow \mathbf{S}^n$ is positive definite.
+\end{homework}
+
+\begin{proof}
+    1.  We directly compute
+    \begin{align}
+        \nabla f(x) = -(\frac{1}{x_1},\frac{1}{x_2},\dots,\frac{1}{x_n})^{\top},\quad \nabla^2 f(x) = \operatorname{diag}(\frac{1}{x_1^2},\frac{1}{x_2^2},\dots,\frac{1}{x_n^2}).
+    \end{align}
+
+    2. We compute the differential form:
+
+    \[\nabla F(X) = \frac{1}{|X|} \frac{\partial|X|}{\partial X}=\frac{1}{|X|}\left(X^*\right)^\top=\left(-X^{-1}\right)^\top=-X^{-1},\]
+where $X^*$ is the adjugate matrix and we use the Leibniz (permutation) formula
+
+$$
+\operatorname{det}(X)=\sum_{\pi \in S_n} \operatorname{sgn}(\pi) \prod_{i=1}^n x_{i, \pi(i)},
+$$
+
+For second order directional derivative, we differentiate two sides of the following equality:
+\[X^{-1}X = I,\]
+
+to get
+\[d(X)X^{-1} + Xd(X^{-1}) = 0.\]
+
+Therefore
+\[d(X^{-1})[V] = -X^{-1}VX^{-1}.\]
+
+So
+\[\nabla^2F(X)[V] = -\nabla (X^{-1})[V] = X^{-1}VX^{-1}, \quad \forall X\succ 0.\]
+
+3.
+\begin{align}
+    \left\langle\nabla^2 F(X)[V], V\right\rangle &= \tr (X^{-1}V^\top X^{-1}V)= \tr\left((X^{-\frac{1}{2}}V^\top X^{-\frac{1}{2}})(X^{-\frac{1}{2}}VX^{-\frac{1}{2}})\right)\\
+    &=\tr ((X^{-\frac{1}{2}}VX^{-\frac{1}{2}})^\top(X^{-\frac{1}{2}}VX^{-\frac{1}{2}}))\\
+    &= \|X^{-\frac{1}{2}}VX^{-\frac{1}{2}}\|_F^2.
+\end{align}
+\end{proof}
+
+\section{Computation}
+\subsection{Background and Objective}
+
+In this assignment, you will study and compare the empirical behavior of gradient descent (GD) and stochastic gradient descent (SGD) on a small-scale regression task. The goal is to understand how step size, stochasticity, iterate averaging, and mini-batch size affect optimization speed, stability, and generalization. You will work with the diabetes dataset, a standard benchmark in statistical learning, where the task is to predict disease progression one year after baseline. This assignment combines implementation, experimentation, and theoretical interpretation.
+
+
+\subsection{Dataset}
+
+The dataset consists of:
+\begin{itemize}
+    \item $n=442$ patient samples,
+    \item $d=10$ real-valued features per patient, i.e. data vectors $x_i \in \mathbf{R}^{10}$ for $i=1, \ldots, n$
+    \item a target variable representing disease progression, i.e. the label $y_i \in \mathbf{R}$ for $i=1, \ldots, n$.
+\end{itemize}
+
+The data are already normalized and centered.
+Data access. You should load the data using scikit-learn. In Python, this can be done as follows:
+
+from sklearn.datasets import load\_diabetes
+
+X, y = load\_diabetes(return\_X\_y=True)
+
+You should randomly split the data into:
+\begin{itemize}
+    \item $75 \%$ training set (approximately 330 samples),
+    \item $25 \%$ validation set (approximately 110 samples).
+\end{itemize}
+
+Fix a random seed to ensure reproducibility and report it in your submitted work.
+
+\subsection{Problem Setup}
+
+We consider regularized linear regression. Given training data $\left\{\left(x_i, y_i\right)\right\}_{i=1}^n$ with $x_i \in \mathbb{R}^d$ and $y_i \in \mathbb{R}$, define the objective
+
+\begin{align}\label{eq. 2.3 loss}
+    f(w)=\frac{1}{n} \sum_{i=1}^n \frac{1}{2}\left(x_i^{\top} w-y_i\right)^2+\frac{\lambda}{2}\|w\|^2,
+\end{align}
+where $\lambda \geq 0$ is a regularization parameter.
+
+Throughout the assignment, you may fix $\lambda$ to a small positive value (e.g. $\lambda=10^{-3}$ ), unless otherwise stated.
+
+\subsection{Part I: Batch Gradient Descent}
+
+\noindent \textbf{(a) Gradient and Smoothness}
+
+1. Derive the gradient $\nabla f(w)$ of the objective in Eq. \eqref{eq. 2.3 loss}.
+
+2. Show that $f$ is convex with $L$-Lipscitz gradient. Express $L$ in terms of the data matrix $X$ and $\lambda$.
+
+\begin{proof}[\solutionname]
+    1. Suppose $X = (x_1,x_2,\dots, x_n)^\top \in \MR^{n\times d}, Y = (y_1,y_2,\dots,y_n)^\top \in \MR^{n}$ 
+    
+    Then we have
+    \[f(\omega) = \frac{1}{2n}\|X\omega - Y\|_2^2 + \frac{\lambda}{2}\|\omega\|_2^2.\]
+    
+    We directly compute
+    \[\nabla f(\omega)=\frac{1}{n} (X^\top X \omega- X^\top Y) +\lambda w.\]
+
+    2.We compute the Hessian
+    \[\nabla^2f(\omega) = \frac{1}{n}X^\top X +\lambda I \succeq 0.\]
+
+    Therefore f is a convex function.
+
+    We compute 
+    \[\|\nabla f(w_1) - \nabla f(w_2)\|_2 \le \|\nabla^2 f(w^*)\|_{op} \|\omega_1-\omega_2\|_2\le (\frac{1}{n}\lambda_{max}(X^\top X) + \lambda)\|\omega_1-\omega_2\|_2.\]
+
+    Therefore by definition we can choose
+    \[L=\frac{1}{n}\lambda_{max}(X^\top X) + \lambda = \frac{1}{n}\|X\|_{op}^2 +\lambda.\]
+\end{proof}
+
+\noindent \textbf{(b) Constant Step-Size GD}
+
+Consider batch gradient descent with constant step size $\eta$ :
+
+\begin{align}\label{eq. Iterates}
+w_{k+1}=w_k-\eta \nabla f\left(w_k\right) .    
+\end{align}
+
+
+1. Implement GD and run it for a fixed number of epochs. Experiment with step sizes
+
+$$
+\eta \in\left\{\frac{0.1}{L}, \frac{0.5}{L}, \frac{1}{L}, \frac{1.5}{L}\right\} .
+$$
+
+
+Plot \eqref{eq. Iterates} training loss vs. iteration and \eqref{eq. Iterates} validation loss vs. iteration.
+
+\noindent \textbf{Questions.}
+\begin{itemize}
+    \item How does the convergence rate depend on $\eta$ ?
+    \item What happens when $\eta>1 / L$ ?
+\end{itemize}
+
+\begin{proof}[\solutionname]
+    Let 
+\[
+f(w)=\frac{1}{2n}\|Xw-Y\|_2^2+\frac{\lambda}{2}\|w\|_2^2,\qquad 
+\nabla f(w)=\frac{1}{n}X^\top(Xw-Y)+\lambda w,
+\]
+and define the (constant) Hessian
+\[
+H:=\nabla^2 f(w)=\frac{1}{n}X^\top X+\lambda I.
+\]
+Then $H\succeq 0$ and $f$ is $L$-smooth with 
+\[
+L=\lambda_{\max}(H)=\frac{1}{n}\lambda_{\max}(X^\top X)+\lambda.
+\]
+If $\lambda>0$ (ridge), then $f$ is also $\mu$-strongly convex with
+\[
+\mu=\lambda_{\min}(H)=\frac{1}{n}\lambda_{\min}(X^\top X)+\lambda \ \ge \ \lambda.
+\]
+
+\medskip
+\noindent\textbf{Convergence rate vs.\ $\eta$.}
+Let $w^\star=\arg\min f(w)$, which satisfies $Hw^\star=\frac{1}{n}X^\top Y$.
+Using the GD update $w_{k+1}=w_k-\eta\nabla f(w_k)$ and $\nabla f(w^\star)=0$, we get
+\[
+w_{k+1}-w^\star = w_k-w^\star-\eta(\nabla f(w_k)-\nabla f(w^\star))
+= (I-\eta H)(w_k-w^\star).
+\]
+Hence
+\[
+w_k-w^\star = (I-\eta H)^k (w_0-w^\star),
+\]
+so the linear contraction factor is
+\[
+\rho(\eta)=\max_i |1-\eta \lambda_i(H)|.
+\]
+Thus:
+\begin{itemize}
+\item If $\eta$ is very small, $\rho(\eta)\approx 1$ and convergence is slow.
+\item As $\eta$ increases (while remaining stable), $\rho(\eta)$ decreases and convergence accelerates.
+\end{itemize}
+
+\medskip
+\noindent\textbf{What happens when $\eta>1/L$?}
+For general $L$-smooth convex functions, the standard ``safe'' choice is $\eta\le 1/L$; beyond this, the usual monotone-descent guarantee no longer holds in the simplest analysis.
+For this \emph{quadratic} objective, GD is stable whenever
+\[
+0<\eta<\frac{2}{L},
+\]
+since then $\rho(\eta)<1$. However, when $\eta>1/L$, some eigen-directions satisfy $1-\eta\lambda_i(H)<0$, so the iterates can \emph{overshoot} and the loss may become \emph{non-monotone} (oscillatory), even though it can still converge if $\eta<2/L$.
+If $\eta\ge 2/L$, then $\rho(\eta)\ge 1$ and GD diverges (the loss typically blows up).
+\end{proof}
+
+\subsection{Part II: Stochastic Gradient Descent}
+
+\noindent \textbf{(a) Constant Step-Size SGD}
+
+Let $\mathcal{B}_k$ be a mini-batch of size $b$ sampled uniformly from the training set. Define the SGD update:
+
+\begin{align}\label{eq. SGD Iterates}
+w_{k+1}=w_k-\eta \frac{1}{b} \sum_{i \in \mathcal{B}_k} \nabla \ell_i\left(w_k\right),
+\end{align}
+where
+
+$$
+\ell_i(w)=\frac{1}{2}\left(x_i^{\top} w-y_i\right)^2+\frac{\lambda}{2}\|w\|^2 .
+$$
+
+\noindent 1. Implement SGD with constant step sizes (experiment with a few stepsizes here).
+
+\noindent 2. Compare batch sizes
+
+$$
+b \in\{1,5,20,100, n\} .
+$$
+
+\noindent 3. Plot training and validation loss as a function of the number of gradient evaluations.
+
+\noindent \textbf{Questions.}
+\begin{itemize}
+    \item How does gradient noise depend on batch size?
+    \item Which batch size gives the fastest decrease in validation error per gradient evaluation?
+\end{itemize}
+
+\begin{proof}[\solutionname]
+    Recall $\ell_i(w)=\frac{1}{2}(x_i^\top w-y_i)^2+\frac{\lambda}{2}\|w\|_2^2$ and the mini-batch gradient
+\[
+g_k \;:=\; \frac{1}{b}\sum_{i\in\mathcal B_k}\nabla \ell_i(w_k),
+\qquad w_{k+1}=w_k-\eta g_k.
+\]
+Because $\mathcal B_k$ is sampled uniformly, $g_k$ is an (approximately) unbiased estimator of the full gradient:
+\[
+\mathbb E[g_k \mid w_k] = \nabla f(w_k).
+\]
+
+\medskip
+\noindent\textbf{How does gradient noise depend on batch size?}
+Let $\xi_i(w):=\nabla \ell_i(w)-\nabla f(w)$ be the per-sample gradient noise (zero mean).
+For (approximately) independent samples, the mini-batch noise is
+\[
+g_k-\nabla f(w_k)=\frac{1}{b}\sum_{i\in\mathcal B_k}\xi_i(w_k),
+\]
+so its covariance scales like
+\[
+\mathrm{Var}(g_k \mid w_k)\approx \frac{1}{b}\,\mathrm{Var}(\nabla \ell_i(w_k)).
+\]
+Equivalently, the \emph{standard deviation} (typical noise magnitude) decreases like $1/\sqrt{b}$.
+Thus, small batches produce noisier (more variable) updates, while large batches produce more stable updates.
+
+\medskip
+\noindent\textbf{Which batch size gives the fastest decrease in validation error per gradient evaluation?}
+Each SGD update with batch size $b$ uses $b$ gradient evaluations. Under a fixed computational budget measured in \#gradient evaluations, there is a trade-off:
+\begin{itemize}
+\item Small $b$ gives \emph{more parameter updates} per budget, which often improves initial progress.
+\item Large $b$ reduces variance, which helps when close to the optimum, but it yields fewer updates per budget.
+\end{itemize}
+
+From the figure, 
+\end{proof}
+
+\noindent \textbf{(b) SGD with Iterate Averaging}
+
+Define the averaged iterate (Polyak-Ruppert averaging):
+
+\begin{align}\label{eq. SGD average}
+    \bar{w}_T=\frac{1}{T} \sum_{k=1}^T w_k .    
+\end{align}
+
+
+\noindent 1. Implement SGD with iterate averaging.
+
+\noindent  2. Compare the performance of:
+ 
+\begin{itemize}
+    \item the final iterate $w_T$,
+    \item the averaged iterate $\bar{w}_T$.
+\end{itemize}
+
+\noindent \textbf{Questions.}
+\begin{itemize}
+    \item How does averaging affect stability?
+    \item Does averaging reduce variance in the objective value?
+    \item Compare averaged SGD to batch GD under a similar computational budget.
+\end{itemize}
+
+\begin{proof}[\solutionname]
+    \begin{proof}[\solutionname]
+Polyak--Ruppert averaging forms
+\[
+\bar w_T=\frac{1}{T}\sum_{k=1}^T w_k.
+\]
+
+\medskip
+\noindent\textbf{How does averaging affect stability?}
+With constant step size, SGD does not converge exactly to $w^\star$ but instead wanders in a neighborhood due to gradient noise.
+Averaging filters out this high-frequency noise: $\bar w_T$ changes more smoothly than $w_T$ and is typically much more stable across iterations and across random seeds.
+
+\medskip
+\noindent\textbf{Does averaging reduce variance in the objective value?}
+Yes. Since $\bar w_T$ aggregates many noisy iterates, its variance is reduced relative to the last iterate.
+In practice this appears as:
+\begin{itemize}
+\item less oscillation in training/validation loss curves,
+\item lower variance of $f(\bar w_T)$ across runs,
+\item often a better final validation loss under the same budget.
+\end{itemize}
+
+\medskip
+\noindent\textbf{Averaged SGD vs batch GD under a similar computational budget.}
+For a budget of $B$ gradient evaluations:
+\begin{itemize}
+\item Batch GD uses $n$ evaluations per step, i.e.\ only $B/n$ updates; it is deterministic and (for strongly convex quadratics) converges linearly in the number of updates.
+\item SGD uses $b$ evaluations per step, i.e.\ $B/b$ updates; it makes many more updates per budget but suffers from noise.
+\end{itemize}
+Averaging typically makes SGD competitive with (and often better than) full-batch GD in terms of validation loss per gradient evaluation, especially when $n$ is large, because it combines frequent updates with reduced variance.
+\end{proof}
+
+\end{proof}
+
+\subsection{Part III: Effect of Batch Size}
+\noindent \textbf{(a) Optimization vs. Statistical Error}
+
+For different batch sizes:
+
+1. Plot training and validation loss as a function of epochs.
+
+2. Identify regimes dominated by optimization error versus statistical noise.
+
+\begin{proof}[\solutionname]
+    
+\end{proof}
+
+\noindent\textbf{(b) Critical Batch Size}
+
+Fix a step size $\eta$ and vary the batch size $b$.
+
+1. Identify a batch size beyond which performance gains saturate.
+
+2. Relate your observations to the variance of stochastic gradients.
+
+\begin{proof}[\solutionname]
+    
+\end{proof}
+
+\end{document}

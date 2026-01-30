@@ -1,0 +1,16 @@
+# DSC291 Stochastic Optimization - environment (CPU only, no GPU)
+# Python == 3.12
+
+# Jupyter Notebook
+notebook>=7.0.0
+
+# Core scientific computing
+numpy>=1.21
+scipy>=1.9
+scikit-learn>=1.0
+
+# Plotting
+matplotlib>=3.5
+
+# Optional: data handling for optimization experiments
+# pandas>=1.3

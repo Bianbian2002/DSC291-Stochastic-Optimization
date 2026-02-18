@@ -3,7 +3,7 @@
 \input{preface}
 
 \title{DSC291 Stochastic Optimization}
-\author{Input Your Name Here}
+\author{Zeyu Bian}
 \date{\today}
 
 \begin{document}
@@ -397,6 +397,16 @@ Plot \eqref{eq. Iterates} training loss vs. iteration and \eqref{eq. Iterates} v
 \end{itemize}
 
 \begin{proof}[\solutionname]
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/Batch_GD__training_loss_vs_iteration.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/Batch_GD__validation_loss_vs_iteration.png}
+\end{figure}
     Let 
 \[
 f(w)=\frac{1}{2n}\|Xw-Y\|_2^2+\frac{\lambda}{2}\|w\|_2^2,\qquad 
@@ -480,6 +490,36 @@ $$
 \end{itemize}
 
 \begin{proof}[\solutionname]
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/SGD__eta_1_00e_01___train_loss_vs_grad_evals.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/SGD__eta_1_00e_01___val_loss_vs_grad_evals.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/SGD__eta_5_02e_01___train_loss_vs_grad_evals.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/SGD__eta_5_02e_01___val_loss_vs_grad_evals.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/SGD__eta_1_00e_02___train_loss_vs_grad_evals.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/SGD__eta_1_00e_02___val_loss_vs_grad_evals.png}
+\end{figure}
+
     Recall $\ell_i(w)=\frac{1}{2}(x_i^\top w-y_i)^2+\frac{\lambda}{2}\|w\|_2^2$ and the mini-batch gradient
 \[
 g_k \;:=\; \frac{1}{b}\sum_{i\in\mathcal B_k}\nabla \ell_i(w_k),
@@ -512,7 +552,6 @@ Each SGD update with batch size $b$ uses $b$ gradient evaluations. Under a fixed
 \item Large $b$ reduces variance, which helps when close to the optimum, but it yields fewer updates per budget.
 \end{itemize}
 
-From the figure, 
 \end{proof}
 
 \noindent \textbf{(b) SGD with Iterate Averaging}
@@ -541,7 +580,15 @@ Define the averaged iterate (Polyak-Ruppert averaging):
 \end{itemize}
 
 \begin{proof}[\solutionname]
-    \begin{proof}[\solutionname]
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/SGD_b_20__eta_5_02e_01__train_loss.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/SGD_b_20__eta_5_02e_01__val_loss.png}
+\end{figure}
 Polyak--Ruppert averaging forms
 \[
 \bar w_T=\frac{1}{T}\sum_{k=1}^T w_k.
@@ -572,7 +619,6 @@ For a budget of $B$ gradient evaluations:
 Averaging typically makes SGD competitive with (and often better than) full-batch GD in terms of validation loss per gradient evaluation, especially when $n$ is large, because it combines frequent updates with reduced variance.
 \end{proof}
 
-\end{proof}
 
 \subsection{Part III: Effect of Batch Size}
 \noindent \textbf{(a) Optimization vs. Statistical Error}
@@ -603,9 +649,23 @@ Fix a step size $\eta$ and vary the batch size $b$.
 2. Relate your observations to the variance of stochastic gradients.
 
 \begin{proof}[\solutionname]
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/Part_III_a___Training_loss_vs_epochs__different_batch_sizes.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/Part_III_a___Validation_loss_vs_epochs__different_batch_sizes.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/hw1/Part_IIIb_final_loss_vs_batch_size.png}
+\end{figure}
 We fix step size $\eta$ and vary batch size $b$; we run SGD for a fixed number of epochs and record the final train/validation loss (see notebook: Part III(b) figure).
 
-\textbf{Critical batch size:} Beyond some $b$ (e.g.\ around 20--100 on the diabetes dataset), increasing batch size gives diminishing returns; final loss saturates.
+\textbf{Critical batch size:} Beyond some $b$ (e.g.\ around 6~8 on the diabetes dataset), increasing batch size gives diminishing returns; final loss saturates.
 
 \textbf{Relation to variance:} The variance of the minibatch gradient scales roughly like $1/b$ under i.i.d.\ sampling. For small $b$, variance is large and many updates are ``wasted'' in noise; for large $b$, variance is small and each update is close to the full gradient. Once $b$ is large enough, variance is already low and further increasing $b$ does not improve convergence much per epoch---hence saturation of performance.
 \end{proof}

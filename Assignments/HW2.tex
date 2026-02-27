@@ -1,0 +1,339 @@
+
+\documentclass[en,hazy,blue,12pt,normal]{elegantnote}
+
+\input{preface}
+
+\title{DSC291 Stochastic Optimization\\Problem Set 2}
+\author{Zeyu Bian}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Theory}
+
+\begin{homework}
+    Consider convex functions $f_1, \ldots, f_k: \mathbb{E} \rightarrow \mathbb{R}$ and define
+
+$$
+g(x)=\max _{i=1, \ldots, k} f_i(x)
+$$
+
+
+Suppose that each function $f_i$ is $\beta$-smooth. The prox-linear algorithm for this problem is the recursion:
+
+$$
+x_{k+1}=\underset{x}{\arg \min }\left\{\underset{i}{\max}\left(f_i\left(x_k\right)+\left\langle\nabla f_i\left(x_k\right), x-x_k\right\rangle\right)+\frac{\beta}{2}\left\|x-x_k\right\|^2\right\} .
+$$
+
+
+Show that the estimate holds:
+
+$$
+g\left(x_k\right)-\min _x g(x) \leq \frac{\beta\left\|x_0-x^*\right\|^2}{2 k}
+$$
+
+where $x^*$ is any minimizer of $g$.
+[Hint: Emulate the analogous result for gradient descent.]
+\end{homework}
+
+\begin{proof}
+    At iterate $x_k$, we define the linearized max-model
+
+$$
+\widehat{g}_k(x):=\max _{i=1, \ldots, k}\left\{f_i\left(x_k\right)+\left\langle\nabla f_i\left(x_k\right), x-x_k\right\rangle\right\} .
+$$
+
+Then by the definition of $g$ and descent lemma:
+
+\[g(x)=\max _i f_i(x) \leq \max _i\left(f_i\left(x_k\right)+\left\langle\nabla f_i\left(x_k\right), x-x_k\right\rangle+\frac{\beta}{2}\left\|x-x_k\right\|^2\right)=\widehat{g}_k(x)+\frac{\beta}{2} \| x-x_k \|^2 .\]
+
+Define the surrogate
+
+$$
+M_k(x):=\widehat{g}_k(x)+\frac{\beta}{2}\left\|x-x_k\right\|^2 .
+$$
+
+Then
+\[x_{k+1}=\arg \min _x M_k(x) .\]
+
+Because $x_{k+1}$ minimizes $M_k$, first-order optimality gives
+
+$$
+0 \in \partial \widehat{g}_k\left(x_{k+1}\right)+\beta\left(x_{k+1}-x_k\right) .
+$$
+
+So there exists $s_{k+1} \in \partial \widehat{g}_k\left(x_{k+1}\right)$ such that
+\[s_{k+1}=\beta\left(x_k-x_{k+1}\right) .\]
+
+By convexity of $\widehat{g}_k$, for any $x$,
+
+$$
+\widehat{g}_k(x) \geq \widehat{g}_k\left(x_{k+1}\right)+\left\langle s_{k+1}, x-x_{k+1}\right\rangle \quad \Longrightarrow \quad \widehat{g}_k\left(x_{k+1}\right)-\widehat{g}_k(x) \leq\left\langle s_{k+1}, x_{k+1}-x\right\rangle .
+$$
+Next, relate $\widehat{g}_k\left(x^{\star}\right)$ to $g^{\star}$. For each $i$, convexity of $f_i$ gives
+
+$$
+f_i\left(x^{\star}\right) \geq f_i\left(x_k\right)+\left\langle\nabla f_i\left(x_k\right), x^{\star}-x_k\right\rangle .
+$$
+
+
+Taking max over $i$ on the left yields
+
+$$
+g^{\star}=g\left(x^{\star}\right)=\max _i f_i\left(x^{\star}\right) \geq \max _i\left(f_i\left(x_k\right)+\left\langle\nabla f_i\left(x_k\right), x^{\star}-x_k\right\rangle\right)=\widehat{g}_k\left(x^{\star}\right) .
+$$
+
+Combining all these equations:
+\[
+\begin{aligned}
+g\left(x_{k+1}\right)-g^{\star} & \leq M_k\left(x_{k+1}\right)-g^{\star} \quad\left(\text { since } g \leq M_k\right) \\
+& =\widehat{g}_k\left(x_{k+1}\right)-g^{\star}+\frac{\beta}{2}\left\|x_{k+1}-x_k\right\|^2 \\
+& \leq \widehat{g}_k\left(x_{k+1}\right)-\widehat{g}_k\left(x^{\star}\right)+\frac{\beta}{2}\left\|x_{k+1}-x_k\right\|^2 \\
+& \leq\left\langle s_{k+1}, x_{k+1}-x^{\star}\right\rangle+\frac{\beta}{2}\left\|x_{k+1}-x_k\right\|^2 \\
+& =\beta\left\langle x_k-x_{k+1}, x_{k+1}-x^{\star}\right\rangle+\frac{\beta}{2}\left\|x_{k+1}-x_k\right\|^2
+\end{aligned}
+\]
+
+By Parallelogram theorem,
+\[\beta\left\langle x_k-x_{k+1}, x_{k+1}-x^{\star}\right\rangle=\frac{\beta}{2}\left(\left\|x_k-x^{\star}\right\|^2-\left\|x_{k+1}-x^{\star}\right\|^2-\left\|x_k-x_{k+1}\right\|^2\right) .\]
+
+Adding $\frac{\beta}{2}\left\|x_{k+1}-x_k\right\|^2$ cancels the last term, yielding the one-step bound:
+
+$$
+g\left(x_{k+1}\right)-g^{\star} \leq \frac{\beta}{2}\left(\left\|x_k-x^{\star}\right\|^2-\left\|x_{k+1}-x^{\star}\right\|^2\right) .
+$$
+
+Telescope we get
+\[K\left(g\left(x_K\right)-g^{\star}\right) \leq \sum_{t=1}^K\left(g\left(x_t\right)-g^{\star}\right)\le\frac{\beta}{2}\left(\left\|x_0-x^{\star}\right\|^2-\left\|x_K-x^{\star}\right\|^2\right) \leq \frac{\beta}{2}\left\|x_0-x^{\star}\right\|^2 .\]
+
+Therefore
+
+$$
+g\left(x_K\right)-\min _x g(x)=g\left(x_K\right)-g^{\star} \leq \frac{\beta\left\|x_0-x^{\star}\right\|^2}{2 K} .
+$$
+\end{proof}
+
+\begin{homework}
+    Let $f: \mathbb{E} \rightarrow \mathbb{R}$ be a $\beta$-smooth $\alpha$-strongly convex function. Suppose that we have access to a stochastic gradient $g(x, z)$ satisfying for some constant $\gamma$ the estimates:
+
+$$
+\mathbb{E}_z g(x, z)=\nabla f(x) \quad \text { and } \quad \mathbb{E}_z\|g(x, z)\|^2 \leq \gamma\left(f(x)-f^*\right) \quad \forall x \in \mathbb{E} .
+$$
+
+[Note that we showed already that this is the case when $\mathbb{E}_z g\left(x^*, z\right)=0$ for some minimizer $x^*$ of $f$-the interpolation setting]. Show that the stochastic gradient method $x_{k+1}=x_k-\eta g\left(x_k, z_k\right)$ converges linearly:
+
+$$
+\mathbb{E} f\left(x_k\right)-f^* \leq\left(1-2 \alpha \eta+\frac{\beta \eta^2 \gamma}{2}\right)^k\left(f\left(x_0\right)-f^*\right),
+$$
+
+as long as $\eta>0$ is sufficiently small to ensure $2 \alpha \eta-\frac{\beta \eta^2 \gamma}{2}<1$. What happens if you now optimize the rate over $\eta$ ?
+\end{homework}
+\begin{proof}
+    By $\beta-$ smoothness we have 
+    \begin{align}\label{eq: q2 one step smoothness bound}
+        f\left(x_{k+1}\right) \leq f\left(x_k\right)+\left\langle\nabla f\left(x_k\right),-\eta g_k\right\rangle+\frac{\beta}{2}\left\|\eta g_k\right\|^2=f_k-\eta\left\langle\nabla f\left(x_k\right), g_k\right\rangle+\frac{\beta \eta^2}{2}\left\|g_k\right\|^2 .    
+    \end{align}
+    
+
+    Let $\mathcal{F}_k$ be the history up to time $k$ (so $x_k$ is $\mathcal{F}_k$-measurable and $z_k$ is fresh).
+
+    By unbiasedness:
+    \[\mathbb{E}\left[\left\langle\nabla f\left(x_k\right), g_k\right\rangle \mid \mathcal{F}_k\right]=\left\langle\nabla f\left(x_k\right), \mathbb{E}\left[g_k \mid \mathcal{F}_k\right]\right\rangle=\left\|\nabla f\left(x_k\right)\right\|^2 .\]
+
+    Second moment bound:
+    \[\mathbb{E}\left[\left\|g_k\right\|^2 \mid \mathcal{F}_k\right] \leq \gamma\left(f_k-f^*\right) .\]
+
+    Taking expectation w.r.t. $\mathcal{F}_k$ in equation \eqref{eq: q2 one step smoothness bound} yields:
+    \[\mathbb{E}\left[f\left(x_{k+1}\right) \mid \mathcal{F}_k\right] \leq f_k-\eta\left\|\nabla f\left(x_k\right)\right\|^2+\frac{\beta \eta^2}{2} \gamma\left(f_k-f^*\right) .\]
+
+    Subtract $f^*$ :
+
+$$
+\mathbb{E}\left[f\left(x_{k+1}\right)-f^* \mid \mathcal{F}_k\right] \leq\left(f_k-f^*\right)-\eta\left\|\nabla f\left(x_k\right)\right\|^2+\frac{\beta \eta^2 \gamma}{2}\left(f_k-f^*\right)
+$$
+
+By $\alpha-$ strongly convexity we have:
+\[\|\nabla f(x)\|^2 \geq 2 \alpha\left(f(x)-f^*\right), \quad \forall x .\]
+
+Plugging back we have:
+\[\mathbb{E}\left[f\left(x_{k+1}\right)-f^* \mid \mathcal{F}_k\right] \leq\left(1-2 \alpha \eta+\frac{\beta \eta^2 \gamma}{2}\right)\left(f_k-f^*\right) .\]
+
+Taking expectation on both side and iterate we get:\
+\[\mathbb{E} f\left(x_k\right)-f^* \leq\left(1-2 \alpha \eta+\frac{\beta \eta^2 \gamma}{2}\right)^k\left(f\left(x_0\right)-f^*\right)\]
+
+Optimize the quadratic in $\eta$ we get
+\[\eta^{\star}=\frac{2 \alpha}{\beta \gamma},\quad \rho\left(\eta^{\star}\right)=1-2 \alpha \cdot \frac{2 \alpha}{\beta \gamma}+\frac{\beta \gamma}{2}\left(\frac{2 \alpha}{\beta \gamma}\right)^2=1-\frac{4 \alpha^2}{\beta \gamma}+\frac{2 \alpha^2}{\beta \gamma}=1-\frac{2 \alpha^2}{\beta \gamma} \text {. }\]
+So the optimized rate bound becomes
+
+$$
+\mathbb{E}\left[f\left(x_k\right)-f^*\right] \leq\left(1-\frac{2 \alpha^2}{\beta \gamma}\right)^k\left(f\left(x_0\right)-f^*\right).
+$$
+\end{proof}
+
+\section{Computation}
+\subsection{Background and Objective}
+In this assignment, you will study and compare the empirical behavior of:
+\begin{itemize}
+    \item stochastic subgradient method (for a nonsmooth problem),
+    \item stochastic gradient descent (SGD) for smooth problems,
+    \item stochastic variance reduced gradient (SVRG).
+\end{itemize}
+
+The goal is to understand how nonsmoothness, batch size, averaging, step-size schedules, condition number, and variance reduction affect optimization speed, stability, and generalization.
+
+This assignment combines derivations, implementation, and experimental analysis.
+
+\subsection{Dataset}
+The dataset consists of:
+\begin{itemize}
+    \item $n=442$ samples,
+    \item $d=10$ features $x_i \in \mathbb{R}^{10}$,
+    \item a real-valued response $y_i \in \mathbb{R}$.
+\end{itemize}
+
+Load the data via:
+from sklearn.datasets import load\_diabetes X, y = load\_diabetes(return\_X\_y=True)
+
+Randomly split the data into:
+\begin{itemize}
+    \item $75 \%$ training set,
+    \item $25 \%$ validation set.
+\end{itemize}
+
+Fix a random seed and report it.
+
+\subsection{Problem Setup}
+We consider finite-sum problems
+
+$$
+\min _{w \in \mathbb{R}^d} F(w):=\frac{1}{n} \sum_{i=1}^n f_i(w) .
+$$
+
+
+\paragraph{Model A: $\ell_2$-Regularized Logistic Regression.} Convert responses to labels $y_i \in\{-1,1\}$. Define
+
+$$
+f_i(w)=\log \left(1+\exp \left(-y_i x_i^{\top} w\right)\right)+\frac{\lambda}{2}\|w\|^2 .
+$$
+
+
+Then
+
+$$
+F(w)=\frac{1}{n} \sum_{i=1}^n f_i(w)
+$$
+
+
+For $\lambda>0$, the function is smooth and strongly convex.
+
+\paragraph{Model B: Least Absolute Deviation (LAD).} Define
+
+$$
+f_i(w)=\left|x_i^{\top} w-y_i\right|, \quad F(w)=\frac{1}{n} \sum_{i=1}^n\left|x_i^{\top} w-y_i\right| .
+$$
+
+
+This objective is convex but nonsmooth.
+\subsection{Part I: Stochastic Subgradient Method for Model B}
+
+\paragraph{(a) Subgradients.}
+
+1. Compute the subdifferential $\partial|t|$.
+2. Show that a stochastic subgradient of $F$ is
+
+$$
+g_i(w)=\operatorname{sign}\left(x_i^{\top} w-y_i\right) x_i .
+$$
+
+\paragraph{(b) Stochastic Subgradient Method. Consider}
+
+$$
+w_{k+1}=w_k-\eta_k g_{i_k}\left(w_k\right), \quad i_k \sim \operatorname{Unif}(\{1, \ldots, n\}) .
+$$
+
+1. Implement stochastic subgradient method.
+
+2. Experiment with step-size schedules:
+\begin{itemize}
+    \item  Constant: $\eta_k=\eta$,
+    \item $\eta_k=\eta_0 / \sqrt{k+1}$,
+    \item $\eta_k=\eta_0 /(k+1)$.
+\end{itemize}
+
+3. Plot training and validation loss versus:
+\begin{itemize}
+    \item  iterations,
+    \item gradient evaluations.
+\end{itemize}
+\subsection{Part II: SGD for Model A}
+\paragraph{(a) Mini-batch SGD. Let $B_k$ be a batch of size $b$. Consider}
+
+$$
+w_{k+1}=w_k-\eta_k \frac{1}{b} \sum_{i \in B_k} \nabla f_i\left(w_k\right)
+$$
+
+1. Implement mini-batch SGD.
+
+2. Compare $b \in\{1,5,20,100, n\}$.
+
+3. Plot loss versus gradient evaluations.
+
+\subparagraph{Questions.}
+\begin{itemize}
+    \item  How does gradient noise depend on $b$ ?
+\item  Which batch size gives fastest decrease per gradient evaluation?
+\item  What happens when $b=n$ ?
+\end{itemize}
+
+\paragraph{(b) Uniform Averaging. Define}
+
+$$
+\bar{w}_T=\frac{1}{T} \sum_{k=1}^T w_k
+$$
+
+1. Implement uniform averaging.
+
+2. Compare $w_T$ and $\bar{w}_T$.
+
+3. Plot both losses versus gradient evaluations.
+
+\subparagraph{Questions.}
+\begin{itemize}
+    \item  Does averaging reduce variance?
+\item  Does it improve validation performance?
+\end{itemize}
+
+\paragraph{(c) Step Decay with Expanding Epochs.}
+ Let $\eta^{(0)}$ and $m_0$ be initial step size and epoch length. For epoch $s=0,1,2, \ldots$ :
+\begin{itemize}
+    \item Run SGD for $m_s$ iterations with step size $\eta^{(s)}$,
+    \item  Update
+\end{itemize}
+
+$$
+\eta^{(s+1)}=\gamma \eta^{(s)}, \quad m_{s+1}=\gamma^{-1} m_s .
+$$
+
+1. Implement for $\gamma \in\{1 / 2,0.8\}$.
+
+2. Compare against constant-step SGD.
+
+3. Plot loss versus gradient evaluations.
+\subsection{Part III: SVRG for model A}
+Implement SVRG with inner loop length $m$ and stepsize $\eta$ in each epoch, plot loss versus gradient evaluations, and compare against best-performing SGD variants. Experiment with the following parameter settings:
+
+1. Choose $\eta \in\{0.05 / L, 0.1 / L, 0.2 / L\}$.
+
+2. Choose $m \in\{\lceil 0.5 \kappa\rceil,\lceil\kappa\rceil,\lceil 2 \kappa\rceil\}$.
+
+\subparagraph{Questions.}
+\begin{itemize}
+    \item  Do you observe linear convergence?
+    \item  How sensitive is performance to $m$ ?
+    \item  Does $m \gg \kappa$ degrade performance?
+    \item  Which method performs best under equal computational budget?
+\end{itemize}
+
+\end{document}

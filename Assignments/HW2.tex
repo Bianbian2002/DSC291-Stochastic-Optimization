@@ -241,6 +241,7 @@ This objective is convex but nonsmooth.
 \paragraph{(a) Subgradients.}
 
 1. Compute the subdifferential $\partial|t|$.
+
 2. Show that a stochastic subgradient of $F$ is
 
 $$
@@ -267,6 +268,18 @@ $$
     \item  iterations,
     \item gradient evaluations.
 \end{itemize}
+
+\begin{proof}[\solutionname]
+    (a) 1.
+    \[\partial |t| = \begin{cases}
+        1 & t>0,\\
+        [-1,1] & t=0,\\
+        -1 & t<0.
+    \end{cases}\]
+
+    2. It is self-evident.
+\end{proof}
+
 \subsection{Part II: SGD for Model A}
 \paragraph{(a) Mini-batch SGD. Let $B_k$ be a batch of size $b$. Consider}
 

@@ -270,15 +270,42 @@ $$
 \end{itemize}
 
 \begin{proof}[\solutionname]
-    (a) 1.
+    \textbf{(a) 1.}
     \[\partial |t| = \begin{cases}
         1 & t>0,\\
         [-1,1] & t=0,\\
         -1 & t<0.
     \end{cases}\]
 
-    2. It is self-evident.
+    \textbf{2.} For
+    \[
+    F(w)=\frac1n\sum_{i=1}^n |x_i^\top w-y_i|,
+    \]
+    choose
+    \[
+    g_i(w)=\operatorname{sign}(x_i^\top w-y_i)x_i,\qquad i\sim\mathrm{Unif}\{1,\dots,n\}.
+    \]
+    Since $g_i(w)\in \partial |x_i^\top w-y_i|$ (using $\operatorname{sign}(0)\in[-1,1]$), we have
+    \[
+    \mathbb E_i[g_i(w)]=\frac1n\sum_{i=1}^n g_i(w)\in \frac1n\sum_{i=1}^n \partial |x_i^\top w-y_i|=\partial F(w).
+    \]
+    Hence this is a valid stochastic subgradient.
+
+    \textbf{(b) Implementation/experiments.} I implemented
+    \[
+    w_{k+1}=w_k-\eta_k g_{i_k}(w_k),\quad i_k\sim\mathrm{Unif}\{1,\dots,n\},
+    \]
+    with schedules: constant, $\eta_0/\sqrt{k+1}$, $\eta_0/(k+1)$. In this setup each iteration uses exactly one sample subgradient, so \emph{gradient evaluations = iterations}.
+
+    To improve stability, I standardized features (and for LAD also standardized targets in the code path used for Part I). The resulting curves are shown in Figure~\ref{fig:part1-lad}. All schedules decrease loss; constant / slowly decaying schedules decrease faster early, while $1/(k+1)$ is more conservative.
 \end{proof}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{../Figures/hw2/part1_lad_subgradient.png}
+    \caption{Part I (LAD): training/validation loss vs gradient evaluations.}
+    \label{fig:part1-lad}
+\end{figure}
 
 \subsection{Part II: SGD for Model A}
 \paragraph{(a) Mini-batch SGD. Let $B_k$ be a batch of size $b$. Consider}
@@ -292,6 +319,29 @@ $$
 2. Compare $b \in\{1,5,20,100, n\}$.
 
 3. Plot loss versus gradient evaluations.
+\begin{proof}[\solutionname]
+\textbf{(a) Mini-batch SGD.}
+I implemented mini-batch SGD for $b\in\{1,5,20,100,n\}$ with gradient-evaluation budget as the cost metric.
+
+Empirically (Figure~\ref{fig:part2a}), the fastest decrease \emph{per gradient evaluation} is achieved around $b=5$. From the final reported values:
+\[
+\text{val loss: } b=1:0.5307,\; b=5:0.5099,\; b=20:0.5163,\; b=100:0.5592,\; b=n:0.6230.
+\]
+
+\textbf{Question answers.}
+\begin{itemize}
+    \item Gradient noise decreases as batch size $b$ increases (approximately variance $\propto 1/b$).
+    \item Best efficiency per gradient evaluation in this run is $b=5$.
+    \item When $b=n$, this becomes full-gradient descent: low noise but few parameter updates for fixed gradient budget, so slower early progress.
+\end{itemize}
+\end{proof}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{../Figures/hw2/part2a_minibatch_sgd.png}
+    \caption{Part II(a): mini-batch SGD (training/validation loss vs gradient evaluations).}
+    \label{fig:part2a}
+\end{figure}
 
 \subparagraph{Questions.}
 \begin{itemize}
@@ -317,6 +367,23 @@ $$
     \item  Does averaging reduce variance?
 \item  Does it improve validation performance?
 \end{itemize}
+\begin{proof}[\solutionname]
+\textbf{(b) Uniform averaging.}
+I compared the last iterate $w_T$ and averaged iterate $\bar w_T$ under the same compute budget.
+In this run:
+\[
+\text{No averaging: val}=0.516278,\qquad
+\text{Uniform averaging: val}=0.530910.
+\]
+So averaging did not improve validation in this specific configuration (Figure~\ref{fig:part2b}). It can reduce variance in noisier regimes, but here it slightly over-smoothed progress.
+\end{proof}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{../Figures/hw2/part2b_uniform_averaging.png}
+    \caption{Part II(b): $w_T$ vs $\bar w_T$ comparison.}
+    \label{fig:part2b}
+\end{figure}
 
 \paragraph{(c) Step Decay with Expanding Epochs.}
  Let $\eta^{(0)}$ and $m_0$ be initial step size and epoch length. For epoch $s=0,1,2, \ldots$ :
@@ -334,6 +401,26 @@ $$
 2. Compare against constant-step SGD.
 
 3. Plot loss versus gradient evaluations.
+\begin{proof}[\solutionname]
+\textbf{(c) Step decay with expanding epochs.}
+I implemented
+\[
+\eta^{(s+1)}=\gamma\eta^{(s)},\qquad m_{s+1}=\gamma^{-1}m_s,
+\]
+for $\gamma\in\{0.5,0.8\}$ and compared to constant-step baseline.
+Final validation losses in this run:
+\[
+\gamma=0.5:0.507966,\quad \gamma=0.8:0.510874,\quad \text{constant}:0.516278.
+\]
+Thus the schedule with stronger decay ($\gamma=0.5$) performed best among these settings (Figure~\ref{fig:part2c}).
+\end{proof}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{../Figures/hw2/part2c_step_decay.png}
+    \caption{Part II(c): step decay with expanding epochs vs constant-step baseline.}
+    \label{fig:part2c}
+\end{figure}
 \subsection{Part III: SVRG for model A}
 Implement SVRG with inner loop length $m$ and stepsize $\eta$ in each epoch, plot loss versus gradient evaluations, and compare against best-performing SGD variants. Experiment with the following parameter settings:
 
@@ -348,5 +435,53 @@ Implement SVRG with inner loop length $m$ and stepsize $\eta$ in each epoch, plo
     \item  Does $m \gg \kappa$ degrade performance?
     \item  Which method performs best under equal computational budget?
 \end{itemize}
+
+\begin{proof}[\solutionname]
+I implemented SVRG for Model A with
+\[
+\eta\in\{0.05/L,0.1/L,0.2/L\},\qquad
+m\in\{\lceil 0.5\kappa\rceil,\lceil\kappa\rceil,\lceil 2\kappa\rceil\}.
+\]
+The validation losses are all close; best observed setting in this run is
+\[
+\eta=0.2/L,\; m=\lceil2\kappa\rceil,\quad \text{val loss}\approx 0.508924.
+\]
+
+\textbf{Question answers.}
+\begin{itemize}
+    \item \textbf{Linear convergence:} On semilog plots of training suboptimality $F(w)-F^\star$ (Figure~\ref{fig:part3-log}), trajectories are approximately linear in the early/mid phase, consistent with linear convergence until reaching a numerical/statistical floor.
+    \item \textbf{Sensitivity to $m$:} Performance is moderately robust across $m\in\{0.5\kappa,\kappa,2\kappa\}$ for this dataset.
+    \item \textbf{Does $m\gg \kappa$ degrade?} In tested range up to $2\kappa$, no clear degradation is observed.
+    \item \textbf{Equal budget comparison:} Using gradient evaluations as compute budget, SVRG is competitive and slightly better than the best SGD variant in this run at larger budgets (Figures~\ref{fig:part3-svrg-vs-sgd}, \ref{fig:part3-budget}).
+\end{itemize}
+\end{proof}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{../Figures/hw2/part3_svrg.png}
+    \caption{Part III: SVRG curves for different $(\eta,m)$ settings.}
+    \label{fig:part3-svrg}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{../Figures/hw2/part3_svrg_logscale_convergence.png}
+    \caption{Part III: semilog convergence diagnostic for SVRG (linear-rate check).}
+    \label{fig:part3-log}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{../Figures/hw2/part3_svrg_vs_sgd.png}
+    \caption{Part III: best SVRG vs best SGD trajectories.}
+    \label{fig:part3-svrg-vs-sgd}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{../Figures/hw2/part3_equal_budget_comparison.png}
+    \caption{Part III: best validation loss under equal compute budgets (gradient evaluations).}
+    \label{fig:part3-budget}
+\end{figure}
 
 \end{document}
